@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Artwork Live Price Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+  <style>
+    body { background: #0d0d0d; color: white; font-family: Arial; text-align: center; }
+    canvas { background: #141414; border-radius: 12px; }
+  </style>
+</head>
+<body>
+
+<h2>Live Artwork Price Chart</h2>
+<canvas id="chart" width="900" height="450"></canvas>
+
+<script>
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vROgLOSKPWH2zKsEjTX79OaY4o0vKkGGdekZm3j1wMfkoEVNvZxLJZbig1_TTOOc-t3wzinwRZ6uFsJ/pub?gid=1066114964&single=true&output=csv";
+
+fetch(csvUrl)
+  .then(res => res.text())
+  .then(text => {
+    const rows = text.trim().split("\n").slice(1);
+    const labels = [];
+    const prices = [];
+
+    rows.forEach(r => {
+      const c = r.split(",");
+      labels.push(c[0]);   // Date/Time
+      prices.push(parseFloat(c[2])); // Price
+    });
+
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{
+          label: "Artwork Price",
+          data: prices,
+          borderColor: "#00ff9c",
+          borderWidth: 3,
+          tension: 0.4,
+          pointRadius: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        interaction: {
+          mode: "index",
+          intersect: false
+        },
+        plugins: {
+          zoom: {
+            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: "x" },
+            pan: { enabled: true, mode: "x" }
+          },
+          legend: { labels: { color: "white" } }
+        },
+        scales: {
+          x: { ticks: { color: "white" } },
+          y: { ticks: { color: "white" } }
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
