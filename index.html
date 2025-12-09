@@ -16,8 +16,7 @@
 <canvas id="chart" width="900" height="450"></canvas>
 
 <script>
-const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vROgLOSKPWH2zKsEjTX79OaY4o0vKkGGdekZm3j1wMfkoEVNvZxLJZbig1_TTOOc-t3wzinwRZ6uFsJ/pub?gid=1066114964&single=true&output=csv";
-
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vROgLOSKPWH2zKsEjTX79OaY4o0vKkGGdekZm3j1wMfkoEVNvZxLJZbig1_TTOOc-t3wzinwRZ6uFsJ/pub?output=csv";
 fetch(csvUrl)
   .then(res => res.text())
   .then(text => {
