@@ -16,19 +16,39 @@
 <canvas id="chart" width="900" height="450"></canvas>
 
 <script>
-const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vROgLOSKPWH2zKsEjTX79OaY4o0vKkGGdekZm3j1wMfkoEVNvZxLJZbig1_TTOOc-t3wzinwRZ6uFsJ/pub?output=csv";
+// 👉 yahi tumhara CSV link hai
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vROgLOSKPWH2zKsEjTX79OaY4o0vKkGGdekZm3j1wMfkoEVNvZxLJZbig1_TTOOc-t3wzinwRZ6uFsJ/pub?gid=1066114964&single=true&output=csv";
+
 fetch(csvUrl)
   .then(res => res.text())
   .then(text => {
-    const rows = text.trim().split("\n").slice(1);
+    const rows = text.trim().split("\n").slice(1); // skip header
     const labels = [];
     const prices = [];
 
     rows.forEach(r => {
       const c = r.split(",");
-      labels.push(c[0]);   // Date/Time
-      prices.push(parseFloat(c[2])); // Price
+      if (c.length < 3) return;
+
+      const dateStr = c[0];                 // Date
+      const priceStr = c[2]
+        .replace(/"/g, "")
+        .replace(/,/g, "");                 // remove quotes, commas
+      const price = Number(priceStr);
+
+      if (!isNaN(price)) {
+        labels.push(dateStr);
+        prices.push(price);
+      }
     });
+
+    if (!prices.length) {
+      document.body.insertAdjacentHTML(
+        "beforeend",
+        "<p>No price data loaded – check PriceHistory CSV.</p>"
+      );
+      return;
+    }
 
     new Chart(document.getElementById("chart"), {
       type: "line",
@@ -62,6 +82,13 @@ fetch(csvUrl)
         }
       }
     });
+  })
+  .catch(err => {
+    console.error(err);
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      "<p>Error loading data – check console.</p>"
+    );
   });
 </script>
 
